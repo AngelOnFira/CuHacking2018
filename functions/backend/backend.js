@@ -61,7 +61,7 @@ module.exports = (input = '', context, callback) => {
     //Get database element by index
     case("get"):
       var result = fetchFromDB('story', 'index', query['index']);
-      if(typeof result == object) callback(null, result);
+      if(typeof result == 'object') callback(null, result);
       else callback(result, null);
     break;
 
@@ -86,10 +86,11 @@ module.exports = (input = '', context, callback) => {
 
 function fetchFromDB(collection, param, identifier){
   //Define DB cursor
-      var cursor = db.collection(collection).find({}).sort({param:-1});
+      //var cursor = db.collection(collection).find({}).sort({param:-1});
+      var cursor = db.collection(collection).find({param:identifier});
       var response;
       var reading = true;
-
+/*
       //Iterate over each entry in the collection
       cursor.forEach(
           function(doc){
@@ -99,15 +100,16 @@ function fetchFromDB(collection, param, identifier){
                 response = JSON.parse(JSON.stringify(doc));
              }
           },function(err){
-              //On error, return a server error
-              if(err) response = "Internal server error";
-              reading = false;
+            //On error, return a server error
+            if(err){ response = "Internal server error"; }
+            reading = false;
           }
       );
 
-      while(reading);
-
-      return response;
+      while(reading){};
+*/
+      //return response;
+      return cursor;
 }
 
 function writeToDB(coll, data){
