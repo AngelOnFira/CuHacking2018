@@ -20,7 +20,7 @@ const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 
 module.exports = (user, channel, text = '', command = {}, botToken = null, callback) => {
     if(text){
-        lib.aidancrowther.pandermoniumBackend['@dev'](`room ${text}`);
+        //lib.aidancrowther.pandermoniumBackend['@dev'](`room ${text}`);
         callback(null, {
           text: `<@${user}>, I have attempted to add you to the game with id: ${text}`,
           attachments: [

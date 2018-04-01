@@ -16,6 +16,7 @@ const message = require('../../utils/message.js');
 * @returns {object}
 */
 module.exports = (context, callback) => {
+    console.log(context);
   let command = context.params;
   if (!command.command) {
     return callback(new Error('No command specified'));
@@ -24,6 +25,7 @@ module.exports = (context, callback) => {
     return callback(new Error('Commands must start with /'));
   }
   let name = command.command.substr(1);
+  console.log(name);
   getBotToken(command.team_id, (err, botToken) => {
     if (err) {
       callback(err);
