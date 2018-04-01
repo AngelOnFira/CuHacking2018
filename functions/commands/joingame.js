@@ -28,15 +28,21 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
         dbRequest.botToken = botToken;
         backend(JSON.stringify(dbRequest));
         callback(null, {
+<<<<<<< HEAD
           text: `<@${user}>, I am attempting to add you to the game with id: ${text}`,
+>>>>>>> 12c97667878b53a97d892d022ac2bf59e7e7f288
           attachments: [
             // You can customize your messages with attachments.
             // See https://api.slack.com/docs/message-attachments for more info.
           ]
         });
     }else{
+        //Forest Testing stuff
+        //var response = await lib.aidancrowther.pandermoniumBackend['@dev'](`newroom`);
         callback(null, {
+<<<<<<< HEAD
             text: `<@${user}>, I am attempting to create a new game for you`
+>>>>>>> 12c97667878b53a97d892d022ac2bf59e7e7f288
         })
     }
 

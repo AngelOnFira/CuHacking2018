@@ -28,7 +28,7 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
     dbRequest.channel = channel;
     backend(JSON.stringify(dbRequest));
   callback(null, {
-    text: `<@${user}>, My understanding is that you want to: ${text}`,
+    text: `<@${display_name}>, My understanding is that you want to: ${text}`,
     attachments: [
       // You can customize your messages with attachments.
       // See https://api.slack.com/docs/message-attachments for more info.
