@@ -63,7 +63,7 @@ module.exports = (input = '', context, callback) => {
       fetchFromDB('story', 'index', query['index'], callback);
     break;
 
-    case("joinroom"):
+    case("joingame"):
       generateRoom(query['data'], callback);
       //writeToDB('rooms', query['data'], callback);
     break;
@@ -84,6 +84,7 @@ function fetchFromDB(collection, param, identifier, callback){
   //Define DB cursor
       var cursor = db.collection(collection).find({}).sort({param:-1});
       var response;
+      var reading = true;
 
       //Iterate over each entry in the collection
       cursor.forEach(
@@ -94,28 +95,25 @@ function fetchFromDB(collection, param, identifier, callback){
                 response = JSON.parse(JSON.stringify(doc));
              }
           },function(err){
-              //On error, return a server error
-              if(err) callback("Internal server error", null);
-              //Otherwise return reponse based on located value
-              else {
-                  if (response != null) {
-                      callback(null, response);
-                  }
-                  else {
-                      callback("Not found", null);
-                  }
-              }
+            //On error, return a server error
+            if(err) callback("Internal server error", null);
+            else callback(null, response);
           }
       );
+
+      while(reading){};
+
+      return response;
 }
 
 function writeToDB(coll, data, param, callback){
-    //Add/update the data
+  //Add/update the data
   var collection = db.collection(coll);
-  collection.update({param: data.param}, data, {upsert: true}, function(err, result){
+
+  collection.update({param : data[param]}, data, {upsert: true}, function(err, result){
     //If an error is encountered, respond with database error
-    if(err) callback("Internal server error: "+err, null);
-    else callback(null, "added");
+    if(err) callback("Internal server error", null);
+    else callback(null, 'Added');
   });
 }
 
@@ -143,6 +141,12 @@ function generateRoom(data, callback){
   var success = writeToDB('rooms', room, 'roomId', callback);
 
 }
+
+/*
+function joinRoom(id, data){
+
+}
+*/
 
 /*
 function getRoomId() {
