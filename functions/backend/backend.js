@@ -28,7 +28,9 @@ MongoConn.connect(dbURL, function(err, database){
 });
 
 //Define module, taking a large string as input
-module.exports = (input = 'default', context, callback) => {
+module.exports = (input = '', context, callback) => {
+
+  var query = {};
 
   //Wait until DB connection is established, or times out
   while(!connected && (Date.now() < (start+timeout))){};
@@ -45,31 +47,47 @@ module.exports = (input = 'default', context, callback) => {
     return;
   }
 
-  //Parse input string to a command array
-  var command = input.toLowerCase().split(" ");
+  //Attempt to parse the query
+  try {
+        query = JSON.parse(input);
+    } catch(e) {
+        callback("Malformed request", null);
+    }
 
   //Switch on main command hook
-  switch(command[0]){
-
-    case("room"):
-      callback(null, "Get room #"+command[1]);
-    break;
-
-    case("newroom"):
-      callback(null, "Add room");
-    break;
+  switch(query['command']){
 
     //Get database element by index
     case("get"):
-      //Define DB cursor
-      var cursor = db.collection('story').find({}).sort({index:-1});
+      fetchFromDB('story', 'index', query['index'], callback);
+    break;
+
+    case("joingame"):
+      writeToDB('rooms', query['data'], callback);
+    break;
+
+    //Default to report invalid hook
+    default:
+      callback("Invalid command", null);
+    break;
+
+  }
+
+  //Close DB connection on exit
+  client.close;
+
+};
+
+function fetchFromDB(collection, param, identifier, callback){
+  //Define DB cursor
+      var cursor = db.collection(collection).find({}).sort({param:-1});
       var response;
 
       //Iterate over each entry in the collection
       cursor.forEach(
           function(doc){
               //If the index matches, return the given JSON entry
-              if(doc['index'] == command[1]){
+              if(doc[param] == identifier){
                 //Set response to the parsed JSON object
                 response = JSON.parse(JSON.stringify(doc));
              }
@@ -87,19 +105,22 @@ module.exports = (input = 'default', context, callback) => {
               }
           }
       );
-    break;
+}
 
-    //Default to report invalid hook
-    default:
-      callback("Invalid command", null);
-    break;
+function writeToDB(coll, data, callback){
+    //Add/update the data
+  var collection = db.collection(coll);
+  collection.update({hello: data.hello}, data, {upsert: true}, function(err, result){
+    //If an error is encountered, respond with database error
+    if(err) callback("Internal server error: "+err, null);
+    else callback(null, "added");
+  });
+}
 
-  }
+function generateRoom(){
 
-  //Close DB connection on exit
-  client.close;
+}
 
-};
 /*
 function getRoomId() {
     var pass = false;

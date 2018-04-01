@@ -1,5 +1,5 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
-const backend = require(../backend/backend.js);
+const backend = require('../backend/backend.js');
 
 /**
 * /hello
@@ -24,8 +24,8 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
         var dbRequest = {};
         dbRequest.command = "joingame";
         dbRequest.room = text;
-        dbRequest.user = user;
-        dbRequest.botToken = botToken;
+        dbRequest.data.user = user;
+        dbRequest.data.botToken = botToken;
         backend(JSON.stringify(dbRequest));
         callback(null, {
           text: `<@${user}>, I am attempting to add you to the game with id: ${text}`,

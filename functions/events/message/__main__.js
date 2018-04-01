@@ -1,5 +1,5 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
-const backend = require(../../backend/backend.js);
+const backend = require('../../backend/backend.js');
 
 /**
 * message event
