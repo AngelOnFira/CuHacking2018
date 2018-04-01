@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 # CuHacking2018
+=======
+>>>>>>> 1b2d2b81f1831eac6344703d5cc3d80d837cb2e5
 # Your StdLib Slack App
 
 Welcome to your StdLib Slack Source Code! This Source Code is the fastest way to
