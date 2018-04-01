@@ -72,7 +72,7 @@ module.exports = (input = '', context, callback) => {
 
     case("joinroom"):
       generateRoom(query['data'], callback);
-      //writeToDB('rooms', query['data'], callback);
+      callback("Command received", null);
     break;
 
     //Default to report invalid hook
