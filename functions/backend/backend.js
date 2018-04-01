@@ -176,7 +176,17 @@ function generateRoom(data, callback){
 
   //Finalize room object and return status
   room['roomId'] = id;
-  var success = writeToDB('rooms', room, 'roomId', callback);
+  writeToDB('rooms', room, 'roomId', callback);
+
+  addUser(room['userData']['user'], id, callback);
+
+}
+
+function addUser(userId, roomId, callback){
+  var user = {};
+  user[userId] = roomId;
+
+  var success = writeToDB('userlist', user, 'user', callback);
 
 }
 

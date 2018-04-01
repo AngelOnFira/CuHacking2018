@@ -42,8 +42,9 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
         //var response = await lib.aidancrowther.pandermoniumBackend['@dev'](`newroom`);
         let temp = JSON.stringify(dbRequest);
         //lib.pandermonium.pandermoniumSlack['@dev'].backend.backend(JSON.stringify(dbRequest));
-        return lib.pandermonium.pandermoniumSlack['@dev'].backend.backend(temp, (err, result) => {
-            callback(err, result);
+        return lib.pandermonium.pandermoniumSlack['@dev'].backend.backend(temp, (err) => {
+            if(err) callback(err, null);
+            else callback(null, "Command received");
         });
         /*callback(null, {
             text: `<@${user}>, I am attempting to create a new game for you\n${temp}`,
