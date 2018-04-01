@@ -1,6 +1,6 @@
 var MongoConn = require('mongodb').MongoClient;
 
-const dbURL = 'mongodb://admin:carleton@54.201.123.8:27017';
+const dbURL = 'mongodb://admin:carleton@cuhacking-shard-00-00-omz4n.mongodb.net:27017,cuhacking-shard-00-01-omz4n.mongodb.net:27017,cuhacking-shard-00-02-omz4n.mongodb.net:27017/test?ssl=true&replicaSet=cuhacking-shard-0&authSource=admin';
 var db;
 var client;
 const dataBase = 'cuhacking';
