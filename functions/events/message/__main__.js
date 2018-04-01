@@ -17,25 +17,8 @@ const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 */
 module.exports = (user, channel, text = '', event = {}, botToken = null, callback) => {
     console.log(event);
+    console.log(text);
     callback(null, {
         text: `I'll tell the GM you want to: ${text}\n`
     });
-  // Only send a response to certain messages
-  // if (text) {
-  //   lib.aidancrowther.pandermoniumBackend['@dev'](JSON.stringify({text:text,user_id:user}),(err,data)=>{
-  //       if(err){
-  //           callback(null,{
-  //               text: err.message
-  //           });
-  //       }else{
-  //           callback(null, {
-  //             text: `I'll tell the GM you want to: ${text}\n`
-  //           });
-  //       }
-  //   });
-
-  // } else {
-  //   callback(null, {});
-  // }
-
 };
