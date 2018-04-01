@@ -1,5 +1,5 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
-const backend = require('../backend/backend.js');
+//const backend = require('../backend/backend.js');
 
 /**
 * /hello
@@ -20,15 +20,18 @@ const backend = require('../backend/backend.js');
 
 
 module.exports = (user, channel, text = '', command = {}, botToken = null, callback) => {
+    var dbRequest = {};
+    dbRequest.command = "joingame";
+    dbRequest.room = text;
+    dbRequest.data = {};
+    dbRequest.data.user = user;
+    dbRequest.data.botToken = botToken;
+    dbRequest.data.channel = channel;
     if(text){
-        var dbRequest = {};
-        dbRequest.command = "joingame";
-        dbRequest.room = text;
-        dbRequest.data.user = user;
-        dbRequest.data.botToken = botToken;
-        backend(JSON.stringify(dbRequest));
+        let temp = JSON.stringify(dbRequest);
+        lib.pandermonium.pandermoniumSlack.backend(JSON.stringify(dbRequest));
         callback(null, {
-          text: `<@${user}>, I am attempting to add you to the game with id: ${text}`,
+          text: `<@${user}>, I am attempting to add you to the game with id: ${text}\n${temp}`,
           attachments: [
             // You can customize your messages with attachments.
             // See https://api.slack.com/docs/message-attachments for more info.
@@ -37,8 +40,14 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
     }else{
         //Forest Testing stuff
         //var response = await lib.aidancrowther.pandermoniumBackend['@dev'](`newroom`);
+        let temp = JSON.stringify(dbRequest);
+        lib.pandermonium.pandermoniumSlack.backend(JSON.stringify(dbRequest));
         callback(null, {
-            text: `<@${user}>, I am attempting to create a new game for you`
+            text: `<@${user}>, I am attempting to create a new game for you\n${temp}`,
+            attachments: [
+              // You can customize your messages with attachments.
+              // See https://api.slack.com/docs/message-attachments for more info.
+            ]
         })
     }
 

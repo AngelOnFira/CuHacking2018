@@ -1,5 +1,5 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
-const backend = require('../../backend/backend.js');
+//const backend = require('../../backend/backend.js');
 
 /**
 * message event
@@ -20,11 +20,17 @@ module.exports = (user, channel, text = '', event = {}, botToken = null, callbac
     var dbRequest = {};
     dbRequest.command = "action";
     dbRequest.action = text;
-    dbRequest.user = user;
-    dbRequest.botToken = botToken;
-    dbRequest.channel = channel;
-    backend(JSON.stringify(dbRequest));
+    dbRequest.data = {};
+    dbRequest.data.user = user;
+    dbRequest.data.botToken = botToken;
+    dbRequest.data.channel = channel;
+    lib.pandermonium.pandermoniumSlack.backend(JSON.stringify(dbRequest));
+    let temp = JSON.stringify(dbRequest);
     callback(null, {
-        text: `I'll tell the GM you want to: ${text}\n`
+        text: `I'll tell the GM you want to: ${text}\n${temp}`,
+        attachments: [
+          // You can customize your messages with attachments.
+          // See https://api.slack.com/docs/message-attachments for more info.
+        ]
     });
 };
