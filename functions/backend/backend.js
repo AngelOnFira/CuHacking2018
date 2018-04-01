@@ -1,5 +1,6 @@
 //Mongo Clinet connection
 var MongoConn = require('mongodb').MongoClient;
+var crypto = require('crypto');
 
 //Database information
 const dbURL = 'mongodb://admin:carleton@cuhacking-shard-00-00-omz4n.mongodb.net:27017,cuhacking-shard-00-01-omz4n.mongodb.net:27017,cuhacking-shard-00-02-omz4n.mongodb.net:27017/test?ssl=true&replicaSet=cuhacking-shard-0&authSource=admin';
@@ -59,11 +60,16 @@ module.exports = (input = '', context, callback) => {
 
     //Get database element by index
     case("get"):
-      fetchFromDB('story', 'index', query['index'], callback);
+      var result = fetchFromDB('story', 'index', query['index']);
+      if(typeof result == object) callback(null, result);
+      else callback(result, null);
     break;
 
     case("joingame"):
-      writeToDB('rooms', query['data'], callback);
+      var room = generateRoom(query['data']);
+      if(room.success) callback(null, "Room "+room.room.roomId+" created");
+      else callback("Internal server error", null);
+      //writeToDB('rooms', query['data'], callback);
     break;
 
     //Default to report invalid hook
@@ -78,7 +84,7 @@ module.exports = (input = '', context, callback) => {
 
 };
 
-function fetchFromDB(collection, param, identifier, callback){
+function fetchFromDB(collection, param, identifier){
   //Define DB cursor
       var cursor = db.collection(collection).find({}).sort({param:-1});
       var response;
@@ -93,33 +99,51 @@ function fetchFromDB(collection, param, identifier, callback){
              }
           },function(err){
               //On error, return a server error
-              if(err) callback("Internal server error", null);
+              if(err) return "Internal server error";
               //Otherwise return reponse based on located value
               else {
-                  if (response != null) {
-                      callback(null, response);
-                  }
-                  else {
-                      callback("Not found", null);
-                  }
+                  return response;
               }
           }
       );
 }
 
-function writeToDB(coll, data, callback){
+function writeToDB(coll, data){
     //Add/update the data
   var collection = db.collection(coll);
   collection.update({hello: data.hello}, data, {upsert: true}, function(err, result){
     //If an error is encountered, respond with database error
-    if(err) callback("Internal server error: "+err, null);
-    else callback(null, "added");
+    if(err) return false;
+    else return true;
   });
 }
 
-function generateRoom(){
+function generateRoom(data){
+  var unique = false;
+  var id;
+  var check;
+
+  var room = {};
+  room['userData'] = data;
+  room['index'] = 0;
+
+  while(!unique){
+    id = crypto.randomBytes(20).toString('hex');
+    check = fetchFromDB('rooms', 'roomId', id);
+    unique = (check == null);
+  }
+
+  room['roomId'] = id;
+  var success = writeToDB('rooms', room);
+  return {"room": room, "success": success};
 
 }
+
+/*
+function joinRoom(id, data){
+
+}
+*/
 
 /*
 function getRoomId() {
