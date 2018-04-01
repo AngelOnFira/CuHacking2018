@@ -1,4 +1,5 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
+const backend = require(../backend/backend.js);
 
 /**
 * /hello
@@ -20,9 +21,14 @@ const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 
 module.exports = (user, channel, text = '', command = {}, botToken = null, callback) => {
     if(text){
-        //lib.aidancrowther.pandermoniumBackend['@dev'](`room ${text}`);
+        var dbRequest = {};
+        dbRequest.command = "joingame";
+        dbRequest.room = text;
+        dbRequest.user = user;
+        dbRequest.botToken = botToken;
+        backend(JSON.stringify(dbRequest));
         callback(null, {
-          text: `<@${user}>, I have attempted to add you to the game with id: ${text}`,
+          text: `<@${user}>, I am attempting to add you to the game with id: ${text}`,
           attachments: [
             // You can customize your messages with attachments.
             // See https://api.slack.com/docs/message-attachments for more info.
@@ -30,7 +36,7 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
         });
     }else{
         callback(null, {
-            text: `<@${user}, I have created a new game for you`
+            text: `<@${user}>, I am attempting to create a new game for you`
         })
     }
 

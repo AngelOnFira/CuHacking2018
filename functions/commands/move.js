@@ -1,4 +1,5 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
+const backend = require(../backend/backend.js);
 
 /**
 * /hello
@@ -19,6 +20,13 @@ const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 
 
 module.exports = (user, channel, text = '', command = {}, botToken = null, callback) => {
+    var dbRequest = {};
+    dbRequest.command = "action";
+    dbRequest.action = text;
+    dbRequest.user = user;
+    dbRequest.botToken = botToken;
+    dbRequest.channel = channel;
+    backend(JSON.stringify(dbRequest));
   callback(null, {
     text: `<@${user}>, My understanding is that you want to: ${text}`,
     attachments: [

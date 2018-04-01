@@ -1,4 +1,5 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
+const backend = require(../../backend/backend.js);
 
 /**
 * message event
@@ -16,8 +17,13 @@ const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 * @returns {object}
 */
 module.exports = (user, channel, text = '', event = {}, botToken = null, callback) => {
-    console.log(event);
-    console.log(text);
+    var dbRequest = {};
+    dbRequest.command = "action";
+    dbRequest.action = text;
+    dbRequest.user = user;
+    dbRequest.botToken = botToken;
+    dbRequest.channel = channel;
+    backend(JSON.stringify(dbRequest));
     callback(null, {
         text: `I'll tell the GM you want to: ${text}\n`
     });
