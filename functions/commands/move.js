@@ -20,7 +20,7 @@ const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 
 module.exports = (user, channel, text = '', command = {}, botToken = null, callback) => {
   callback(null, {
-    text: `<@${user}>, My understanding is that you want to: ${text}`,
+    text: `<@${display_name}>, My understanding is that you want to: ${text}`,
     attachments: [
       // You can customize your messages with attachments.
       // See https://api.slack.com/docs/message-attachments for more info.
