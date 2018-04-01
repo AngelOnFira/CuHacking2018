@@ -14,22 +14,6 @@ const start = Date.now();
 var connected = false;
 var status = "";
 
-//Initialize connection to database
-/*
-MongoConn.connect(dbURL, function(err, database){
-  //On error, report database error
-  if(err) status = "Unable to establish database connection";
-  //Otherwise update database variables
-  else{
-    client = database;
-    db = client.db(dataBase);
-  }
-
-  //Close DB connection on exit
-  client.close;
-});
-*/
-
 //Define module, taking a large string as input
 module.exports = (input = '', context, callback) => {
 
@@ -37,130 +21,121 @@ module.exports = (input = '', context, callback) => {
 
   var query = {};
 
-  //Wait until DB connection is established, or times out
-  //while(!connected && (Date.now() < (start+timeout))){};
-
-  //If the connection timed out, report a time out
-  //if(!connected){
-    //callback("Connection timed out", null);
-    //return;
-  //}
-
-  //Report an async failure status
-  //if(status){
-    //callback(status, "");
-    //return;
-  //}
-
   //Attempt to parse the query
   try {
-        query = JSON.parse(input);
-    } catch(e) {
-      console.log("malformed");
-        callback("Malformed request", null);
-    }
+    query = JSON.parse(input);
+  } catch (e) {
+    console.log("malformed");
+    callback("Malformed request", null);
+  }
 
-    console.log("JSON okay");
+  console.log("JSON okay");
 
   //Switch on main command hook
-  switch(query['command']){
+  switch (query['command']) {
 
     //Get database element by index
-    case("get"):
+    case ("get"):
       fetchFromDB(query['collection'], query['param'], query['identifier'], callback);
-    break;
+      break;
 
-    case("action"):
+    case ("action"):
       runAction(query['action'], query['data'], callback);
-    break;
+      break;
 
-    case("joinroom"):
+    case ("joinroom"):
       generateRoom(query['data'], callback);
       callback("Command received", null);
-    break;
+      break;
 
-    //Default to report invalid hook
+      //Default to report invalid hook
     default:
       callback("Invalid command", null);
-    break;
+      break;
 
   }
 
 };
 
-function fetchFromDB(collection, param, identifier, callback){
+function fetchFromDB(collection, param, identifier, callback) {
 
   //Initialize connection to database
-MongoConn.connect(dbURL, function(err, database){
-  //On error, report database error
-  if(err) status = "Unable to establish database connection";
-  //Otherwise update database variables
-  else{
-    client = database;
-    db = client.db(dataBase);
-  }
+  MongoConn.connect(dbURL, function(err, database) {
+    //On error, report database error
+    if (err) status = "Unable to establish database connection";
+    //Otherwise update database variables
+    else {
+      client = database;
+      db = client.db(dataBase);
+    }
 
 
-  //Define DB cursor
-      var cursor = db.collection(collection).find({}).sort({param:-1});
-      var response;
+    //Define DB cursor
+    var cursor = db.collection(collection).find({}).sort({
+      param: -1
+    });
+    var response;
 
-      //Iterate over each entry in the collection
-      cursor.forEach(
-          function(doc){
-              //If the index matches, return the given JSON entry
-              if(doc[param] == identifier){
-                //Set response to the parsed JSON object
-                response = JSON.parse(JSON.stringify(doc));
-             }
-          },function(err){
-              //On error, return a server error
-              if(err) callback("Internal server error", null);
-              //Otherwise return reponse based on located value
-              else {
-                  if (response != null) {
-                      callback(null, response);
-                  }
-                  else {
-                      callback("Not found", null);
-                  }
-              }
+    //Iterate over each entry in the collection
+    cursor.forEach(
+      function(doc) {
+        //If the index matches, return the given JSON entry
+        if (doc[param] == identifier) {
+          //Set response to the parsed JSON object
+          response = JSON.parse(JSON.stringify(doc));
+        }
+      },
+      function(err) {
+        //On error, return a server error
+        if (err) callback("Internal server error", null);
+        //Otherwise return reponse based on located value
+        else {
+          if (response != null) {
+            callback(null, response);
+          } else {
+            callback("Not found", null);
           }
-      );
+        }
+      }
+    );
 
-        //Close DB connection on exit
-  client.close;
-});
+    //Close DB connection on exit
+    client.close;
+  });
 }
 
-function writeToDB(coll, data, param, callback){
+function writeToDB(coll, data, param, callback) {
 
   //Initialize connection to database
-MongoConn.connect(dbURL, function(err, database){
-  //On error, report database error
-  if(err) status = "Unable to establish database connection";
-  //Otherwise update database variables
-  else{
-    client = database;
-    db = client.db(dataBase);
-  }
+  MongoConn.connect(dbURL, function(err, database) {
+    //On error, report database error
+    if (err) status = "Unable to establish database connection";
+    //Otherwise update database variables
+    else {
+      client = database;
+      db = client.db(dataBase);
+    }
 
     //Add/update the data
-  var collection = db.collection(coll);
-  collection.update({param: data.param}, data, {upsert: true}, function(err, result){
-    //If an error is encountered, respond with database error
-    if(err) callback("Internal server error: "+err, null);
-    else callback(null, "added");
-  });
+    var collection = db.collection(coll);
+    collection.update({
+      param: data.param
+    }, data, {
+      upsert: true
+    }, function(err, result) {
+      //If an error is encountered, respond with database error
+      if (err) callback("Internal server error: " + err, null);
+      else callback(null, "added");
+    });
 
-        //Close DB connection on exit
-  client.close;
-});
+    //Close DB connection on exit
+    client.close;
+  });
 
 }
 
 //Create a new room using the given user data
-function generateRoom(data, callback){
+function generateRoom(data, callback) {
   //Initialize variables
   var unique = false;
   var id;
@@ -173,9 +148,9 @@ function generateRoom(data, callback){
 
   //Generate a unique user id
   //while(!unique){
-    id = crypto.randomBytes(20).toString('hex');
-    //check = fetchFromDB('rooms', 'roomId', id);
-    //unique = (check == null);
+  id = crypto.randomBytes(20).toString('hex');
+  //check = fetchFromDB('rooms', 'roomId', id);
+  //unique = (check == null);
   //}
 
   //Finalize room object and return status
@@ -186,7 +161,7 @@ function generateRoom(data, callback){
 
 }
 
-function addUser(userId, roomId, callback){
+function addUser(userId, roomId, callback) {
   var user = {};
   user[userId] = roomId;
 
@@ -194,141 +169,88 @@ function addUser(userId, roomId, callback){
 
 }
 
-function runAction(action, user, callback){
-
-
+function runAction(action, user, callback) {
   //Initialize connection to database
-MongoConn.connect(dbURL, function(err, database){
-  //On error, report database error
-  if(err) status = "Unable to establish database connection";
-  //Otherwise update database variables
-  else{
-    client = database;
-    db = client.db(dataBase);
-  }
-
-
-  
-    //Define DB cursor
-      var cursor = db.collection('rooms').find({}).sort({"id":-1});
-      var response;
-
-      //Iterate over each entry in the collection
-      cursor.forEach(
-          function(doc){
-              //If the index matches, return the given JSON entry
-              if(doc['userData']['user'] == user['user']){
-                //Set response to the parsed JSON object
-                response = JSON.parse(JSON.stringify(doc));
-             }
-          },function(err){
-              //On error, return a server error
-              if(err) callback("Internal server error", null);
-              //Otherwise return reponse based on located value
-              else {
-                  if (response != null) {
-
-
-                    
-
-                    MongoConn.connect(dbURL, function(err, database){
-  //On error, report database error
-  if(err) status = "Unable to establish database connection";
-  //Otherwise update database variables
-  else{
-    client = database;
-    db = client.db(dataBase);
-  }
-
-
-  
-    //Define DB cursor
-      var cursor = db.collection('story').find({}).sort({"id":-1});
-      var result;
-
-      //Iterate over each entry in the collection
-      cursor.forEach(
-          function(doc){
-              //If the index matches, return the given JSON entry
-              if(doc['index'] == response['index']){
-                //Set response to the parsed JSON object
-                result = JSON.parse(JSON.stringify(doc));
-             }
-          },function(err){
-              //On error, return a server error
-              if(err) callback("Internal server error", null);
-              //Otherwise return reponse based on located value
-              else {
-                  if (result != null) {
-                    
-
-                    console.log(result['storyText']);
-
-                    
-                    callback(null, result);
-                  }
-                  else {
-                      callback("Error", null);
-                  }
-              }
-          }
-      );
-
-
-        //Close DB connection on exit
-  client.close;
-});
-
-
-
-
-
-                    callback(null, response);
-                  }
-                  else {
-                      callback("Error", null);
-                  }
-              }
-          }
-      );
-
-
-        //Close DB connection on exit
-  client.close;
-});
-
-
-}
-
-/*
-function getRoomId() {
-    var pass = false;
-    while (!pass ){
-
-        var num = Math.floor(Math.random() * 8999+1000);
-
-        if (!(num in dict)) {
-            pass = true;
-            dict[num] = dict[num] || [];
-            dict[num].push(true);
-        }
-
+  MongoConn.connect(dbURL, function(err, database) {
+    //On error, report database error
+    if (err) status = "Unable to establish database connection";
+    //Otherwise update database variables
+    else {
+      client = database;
+      db = client.db(dataBase);
     }
-    return num;
-}
-
- function interpretResponse( userResponse, storyIndex){
-    var storyResponses = story[storyIndex].responses;
-
-     for (var res in storyResponses) {
-         console.log(res);
-         console.log(storyResponses[res]['response']);
-
-        if (storyResponses[res]['response'] == userResponse) {
-            return storyResponses[res]['goto'];
+    //Define DB cursor
+    var cursor = db.collection('rooms').find({}).sort({
+      "id": -1
+    });
+    var response;
+    //Iterate over each entry in the collection
+    cursor.forEach(
+      function(doc) {
+        //If the index matches, return the given JSON entry
+        if (doc['userData']['user'] == user['user']) {
+          //Set response to the parsed JSON object
+          response = JSON.parse(JSON.stringify(doc));
         }
-     }
-     //Return an error
-     return -1;
- }
- */
+      },
+      function(err) {
+        //On error, return a server error
+        if (err) callback("Internal server error", null);
+        //Otherwise return reponse based on located value
+        else {
+          if (response != null) {
+            MongoConn.connect(dbURL, function(err, database) {
+              //On error, report database error
+              if (err) status = "Unable to establish database connection";
+              //Otherwise update database variables
+              else {
+                client = database;
+                db = client.db(dataBase);
+              }
+              //Define DB cursor
+              var cursor = db.collection('story').find({}).sort({
+                "id": -1
+              });
+              var result;
+
+              //Iterate over each entry in the collection
+              cursor.forEach(
+                function(doc) {
+                  //If the index matches, return the given JSON entry
+                  if (doc['index'] == response['index']) {
+                    //Set response to the parsed JSON object
+                    result = JSON.parse(JSON.stringify(doc));
+                  }
+                },
+                function(err) {
+                  //On error, return a server error
+                  if (err) callback("Internal server error", null);
+                  //Otherwise return reponse based on located value
+                  else {
+                    if (result != null) {
+
+
+                      console.log(result['storyText']);
+
+
+                      callback(null, result);
+                    } else {
+                      callback("Error", null);
+                    }
+                  }
+                }
+              );
+              //Close DB connection on exit
+              client.close;
+            });
+            callback(null, response);
+          } else {
+            callback("Error", null);
+          }
+        }
+      }
+    );
+    //Close DB connection on exit
+    client.close;
+  });
+}

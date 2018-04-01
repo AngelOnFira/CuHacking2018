@@ -1,0 +1,8 @@
+Good morning explorer! You are about to embark on a quest. You are all packed and ready to go.|go outside'2,go back to bed'3
+Thats enough for today. Back to bed.|wake up the next morning'1,sleep the next day'3
+You dream that you are in a field|look around'4
+There are woods at the edge of the field|enter the woods'5
+You see a monster!|hide behind a rock'6,run at the monster'8
+As you run behind the rock, you fall and hit your head|try to stay awake'7
+You drift off to sleep|sleep'1
+The monster slashes you! You feel the world drifting away...|sleep'1
