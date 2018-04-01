@@ -88,6 +88,7 @@ function fetchFromDB(collection, param, identifier){
   //Define DB cursor
       var cursor = db.collection(collection).find({}).sort({param:-1});
       var response;
+      var reading = true;
 
       //Iterate over each entry in the collection
       cursor.forEach(
@@ -99,40 +100,53 @@ function fetchFromDB(collection, param, identifier){
              }
           },function(err){
               //On error, return a server error
-              if(err) return "Internal server error";
-              //Otherwise return reponse based on located value
-              else {
-                  return response;
-              }
+              if(err) response = "Internal server error";
+              reading = false;
           }
       );
+
+      while(reading);
+
+      return response;
 }
 
 function writeToDB(coll, data){
-    //Add/update the data
+  //Add/update the data
   var collection = db.collection(coll);
+  var writing = true;
+  var result = false;
+
   collection.update({hello: data.hello}, data, {upsert: true}, function(err, result){
     //If an error is encountered, respond with database error
-    if(err) return false;
-    else return true;
+    if(!err) result = true;
+    writing = false;
   });
+
+  while(writing){};
+
+  return result;
 }
 
+//Create a new room using the given user data
 function generateRoom(data){
+  //Initialize variables
   var unique = false;
   var id;
   var check;
 
+  //Begin generating room object
   var room = {};
   room['userData'] = data;
   room['index'] = 0;
 
+  //Generate a unique user id
   while(!unique){
     id = crypto.randomBytes(20).toString('hex');
     check = fetchFromDB('rooms', 'roomId', id);
     unique = (check == null);
   }
 
+  //Finalize room object and return status
   room['roomId'] = id;
   var success = writeToDB('rooms', room);
   return {"room": room, "success": success};
