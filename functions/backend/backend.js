@@ -15,6 +15,7 @@ var connected = false;
 var status = "";
 
 //Initialize connection to database
+/*
 MongoConn.connect(dbURL, function(err, database){
   //On error, report database error
   if(err) status = "Unable to establish database connection";
@@ -24,9 +25,10 @@ MongoConn.connect(dbURL, function(err, database){
     db = client.db(dataBase);
   }
 
-  //Stop waiting on Async
-  connected = true;
+  //Close DB connection on exit
+  client.close;
 });
+*/
 
 //Define module, taking a large string as input
 module.exports = (input = '', context, callback) => {
@@ -36,19 +38,19 @@ module.exports = (input = '', context, callback) => {
   var query = {};
 
   //Wait until DB connection is established, or times out
-  while(!connected && (Date.now() < (start+timeout))){};
+  //while(!connected && (Date.now() < (start+timeout))){};
 
   //If the connection timed out, report a time out
-  if(!connected){
-    callback("Connection timed out", null);
-    return;
-  }
+  //if(!connected){
+    //callback("Connection timed out", null);
+    //return;
+  //}
 
   //Report an async failure status
-  if(status){
-    callback(status, "");
-    return;
-  }
+  //if(status){
+    //callback(status, "");
+    //return;
+  //}
 
   //Attempt to parse the query
   try {
@@ -80,12 +82,21 @@ module.exports = (input = '', context, callback) => {
 
   }
 
-  //Close DB connection on exit
-  client.close;
-
 };
 
 function fetchFromDB(collection, param, identifier, callback){
+
+  //Initialize connection to database
+MongoConn.connect(dbURL, function(err, database){
+  //On error, report database error
+  if(err) status = "Unable to establish database connection";
+  //Otherwise update database variables
+  else{
+    client = database;
+    db = client.db(dataBase);
+  }
+
+
   //Define DB cursor
       var cursor = db.collection(collection).find({}).sort({param:-1});
       var response;
@@ -112,9 +123,24 @@ function fetchFromDB(collection, param, identifier, callback){
               }
           }
       );
+
+        //Close DB connection on exit
+  client.close;
+});
 }
 
 function writeToDB(coll, data, param, callback){
+
+  //Initialize connection to database
+MongoConn.connect(dbURL, function(err, database){
+  //On error, report database error
+  if(err) status = "Unable to establish database connection";
+  //Otherwise update database variables
+  else{
+    client = database;
+    db = client.db(dataBase);
+  }
+
     //Add/update the data
   var collection = db.collection(coll);
   collection.update({param: data.param}, data, {upsert: true}, function(err, result){
@@ -122,6 +148,11 @@ function writeToDB(coll, data, param, callback){
     if(err) callback("Internal server error: "+err, null);
     else callback(null, "added");
   });
+
+        //Close DB connection on exit
+  client.close;
+});
+
 }
 
 //Create a new room using the given user data
