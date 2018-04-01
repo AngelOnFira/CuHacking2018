@@ -27,7 +27,10 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
     dbRequest.data.user = user;
     dbRequest.data.botToken = botToken;
     dbRequest.data.channel = channel;
-    lib.pandermonium.pandermoniumSlack.backend(JSON.stringify(dbRequest));
+    return lib.pandermonium.pandermoniumSlack['@dev'].backend.backend(JSON.stringify(dbRequest), (err) => {
+      if(err) callback(err, null);
+      else callback(null, "Command received");
+    });
     /*let temp=JSON.stringify(dbRequest);
   callback(null, {
     text: `<@${user}>, My understanding is that you want to: ${text}\n${JSON.stringify(dbRequest)}`,

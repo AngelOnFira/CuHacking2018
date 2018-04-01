@@ -1,7 +1,6 @@
 //Mongo Clinet connection
 var MongoConn = require('mongodb').MongoClient;
 var crypto = require('crypto');
-var req = require('sync-request');
 
 //Database information
 const dbURL = 'mongodb://admin:carleton@cuhacking-shard-00-00-omz4n.mongodb.net:27017,cuhacking-shard-00-01-omz4n.mongodb.net:27017,cuhacking-shard-00-02-omz4n.mongodb.net:27017/test?ssl=true&replicaSet=cuhacking-shard-0&authSource=admin';
@@ -68,7 +67,7 @@ module.exports = (input = '', context, callback) => {
 
     //Get database element by index
     case("get"):
-      fetchFromDB('story', 'index', query['index'], callback);
+      fetchFromDB(query['collection'], query['param'], query['identifier'], callback);
     break;
 
     case("action"):
@@ -196,7 +195,109 @@ function addUser(userId, roomId, callback){
 }
 
 function runAction(action, user, callback){
-  var roomId = 
+
+
+  //Initialize connection to database
+MongoConn.connect(dbURL, function(err, database){
+  //On error, report database error
+  if(err) status = "Unable to establish database connection";
+  //Otherwise update database variables
+  else{
+    client = database;
+    db = client.db(dataBase);
+  }
+
+
+  
+    //Define DB cursor
+      var cursor = db.collection('rooms').find({}).sort({"id":-1});
+      var response;
+
+      //Iterate over each entry in the collection
+      cursor.forEach(
+          function(doc){
+              //If the index matches, return the given JSON entry
+              if(doc['userData']['user'] == user['user']){
+                //Set response to the parsed JSON object
+                response = JSON.parse(JSON.stringify(doc));
+             }
+          },function(err){
+              //On error, return a server error
+              if(err) callback("Internal server error", null);
+              //Otherwise return reponse based on located value
+              else {
+                  if (response != null) {
+
+
+                    
+
+                    MongoConn.connect(dbURL, function(err, database){
+  //On error, report database error
+  if(err) status = "Unable to establish database connection";
+  //Otherwise update database variables
+  else{
+    client = database;
+    db = client.db(dataBase);
+  }
+
+
+  
+    //Define DB cursor
+      var cursor = db.collection('story').find({}).sort({"id":-1});
+      var result;
+
+      //Iterate over each entry in the collection
+      cursor.forEach(
+          function(doc){
+              //If the index matches, return the given JSON entry
+              if(doc['index'] == response['index']){
+                //Set response to the parsed JSON object
+                result = JSON.parse(JSON.stringify(doc));
+             }
+          },function(err){
+              //On error, return a server error
+              if(err) callback("Internal server error", null);
+              //Otherwise return reponse based on located value
+              else {
+                  if (result != null) {
+                    
+
+                    console.log(result['storyText']);
+
+                    
+                    callback(null, result);
+                  }
+                  else {
+                      callback("Error", null);
+                  }
+              }
+          }
+      );
+
+
+        //Close DB connection on exit
+  client.close;
+});
+
+
+
+
+
+                    callback(null, response);
+                  }
+                  else {
+                      callback("Error", null);
+                  }
+              }
+          }
+      );
+
+
+        //Close DB connection on exit
+  client.close;
+});
+
+
 }
 
 /*
