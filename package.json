@@ -17,7 +17,7 @@
   "stdlib": {
     "build": "faaslang",
     "name": "pandermonium/pandermoniumSlack",
-    "timeout": 10000,
+    "timeout": 30000,
     "publish": true,
     "personalize": {
       "keys": [],
