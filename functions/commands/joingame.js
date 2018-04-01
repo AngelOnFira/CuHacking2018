@@ -21,13 +21,13 @@ const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 
 module.exports = (user, channel, text = '', command = {}, botToken = null, callback) => {
     var dbRequest = {};
-    dbRequest.command = "joingame";
-    dbRequest.room = text;
+    dbRequest.command = "joinroom";
+    //dbRequest.room = text;
     dbRequest.data = {};
     dbRequest.data.user = user;
     dbRequest.data.botToken = botToken;
     dbRequest.data.channel = channel;
-    if(text){
+    /*if(text){
         let temp = JSON.stringify(dbRequest);
         lib.pandermonium.pandermoniumSlack.backend(JSON.stringify(dbRequest));
         callback(null, {
@@ -37,19 +37,21 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
             // See https://api.slack.com/docs/message-attachments for more info.
           ]
         });
-    }else{
+    }else{*/
         //Forest Testing stuff
         //var response = await lib.aidancrowther.pandermoniumBackend['@dev'](`newroom`);
         let temp = JSON.stringify(dbRequest);
-        console.log(dbRequest);
-        lib.pandermonium.pandermoniumSlack.backend.backend(JSON.stringify(dbRequest));
-        callback(null, {
+        //lib.pandermonium.pandermoniumSlack['@dev'].backend.backend(JSON.stringify(dbRequest));
+        return lib.pandermonium.pandermoniumSlack['@dev'].backend.backend(temp, (err, result) => {
+            callback(err, result);
+        });
+        /*callback(null, {
             text: `<@${user}>, I am attempting to create a new game for you\n${temp}`,
             attachments: [
               // You can customize your messages with attachments.
               // See https://api.slack.com/docs/message-attachments for more info.
             ]
-        })
-    }
+        });*/
+    //}
 
 };

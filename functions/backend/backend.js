@@ -9,7 +9,7 @@ var client;
 const dataBase = 'cuhacking';
 
 //Local values for runtime
-const timeout = 5000;
+const timeout = 20000;
 const start = Date.now();
 var connected = false;
 var status = "";
@@ -30,6 +30,8 @@ MongoConn.connect(dbURL, function(err, database){
 
 //Define module, taking a large string as input
 module.exports = (input = '', context, callback) => {
+
+  console.log(input);
 
   var query = {};
 
@@ -52,8 +54,11 @@ module.exports = (input = '', context, callback) => {
   try {
         query = JSON.parse(input);
     } catch(e) {
+      console.log("malformed");
         callback("Malformed request", null);
     }
+
+    console.log("JSON okay");
 
   //Switch on main command hook
   switch(query['command']){
