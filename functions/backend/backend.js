@@ -1,6 +1,7 @@
 //Mongo Clinet connection
 var MongoConn = require('mongodb').MongoClient;
 var crypto = require('crypto');
+var req = require('sync-request');
 
 //Database information
 const dbURL = 'mongodb://admin:carleton@cuhacking-shard-00-00-omz4n.mongodb.net:27017,cuhacking-shard-00-01-omz4n.mongodb.net:27017,cuhacking-shard-00-02-omz4n.mongodb.net:27017/test?ssl=true&replicaSet=cuhacking-shard-0&authSource=admin';
@@ -68,6 +69,10 @@ module.exports = (input = '', context, callback) => {
     //Get database element by index
     case("get"):
       fetchFromDB('story', 'index', query['index'], callback);
+    break;
+
+    case("action"):
+      runAction(query['action'], query['data'], callback);
     break;
 
     case("joinroom"):
@@ -188,6 +193,10 @@ function addUser(userId, roomId, callback){
 
   var success = writeToDB('userlist', user, 'user', callback);
 
+}
+
+function runAction(action, user, callback){
+  var roomId = 
 }
 
 /*

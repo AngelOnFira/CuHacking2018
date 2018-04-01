@@ -28,12 +28,12 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
     dbRequest.data.botToken = botToken;
     dbRequest.data.channel = channel;
     lib.pandermonium.pandermoniumSlack.backend(JSON.stringify(dbRequest));
-    let temp=JSON.stringify(dbRequest);
+    /*let temp=JSON.stringify(dbRequest);
   callback(null, {
     text: `<@${user}>, My understanding is that you want to: ${text}\n${JSON.stringify(dbRequest)}`,
     attachments: [
       // You can customize your messages with attachments.
       // See https://api.slack.com/docs/message-attachments for more info.
     ]
-  });
+  });*/
 };
